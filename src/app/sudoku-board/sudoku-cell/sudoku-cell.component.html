@@ -1,0 +1,10 @@
+<div
+    class="w-full h-full flex items-center justify-center cursor-pointer hover:bg-blue-900/10"
+    [class.bg-gray-200]="isSelected()"
+    [ngClass]="getCellNgClass()"
+    (click)="onCellClick(id())"
+>
+    @if (!isCellBlank()) {
+        {{ cellData()?.value }}
+    }
+</div>

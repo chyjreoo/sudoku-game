@@ -8,6 +8,7 @@
             "schematics": {
                 "@schematics/angular:component": {
                     "style": "scss",
+                    "type": "component",
                     "skipTests": true
                 },
                 "@schematics/angular:class": {
@@ -29,6 +30,7 @@
                     "skipTests": true
                 },
                 "@schematics/angular:service": {
+                    "type": "service",
                     "skipTests": true
                 }
             },

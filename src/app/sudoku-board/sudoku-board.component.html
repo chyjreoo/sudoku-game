@@ -1,0 +1,34 @@
+<div class="flex flex-col items-center justify-center p-5">
+
+    <div class="grid grid-cols-9 border-2 border-blue-900/30 rounded-lg">
+        @for (row of gridData(); track rowIndex; let rowIndex = $index; let lastRow = $last) {
+            @for (cell of row; track colIndex; let colIndex = $index; let lastCell = $last) {
+                <div
+                    class="relative"
+                    [ngClass]="getBoardCellNgClass(rowIndex, lastRow, colIndex, lastCell)"
+                >
+                    <div class="absolute text-red-500 text-xs top-0 left-0">{{cell.id}}</div>
+
+                    <app-sudoku-cell
+                        [cellData]="cell"
+                        (cellClick)="handleCellClick(cell.id)"
+                        [isSelected]="cell.id === selectedCellId()"
+                    />
+                </div>
+            }
+        }
+    </div>
+
+    <div class="flex gap-2 py-8">
+        @for (num of numberButtons; track $index) {
+            <button
+                type="button"
+                class="w-8 h-8  text-white rounded-md bg-blue-400 hover:bg-blue-300 disabled:bg-gray-300"
+                [disabled]="!selectedCellId()"
+                (click)="onNumberButtonClick(num)"
+            >{{ num === 0 ? '✕' : num }}
+            </button>
+        }
+    </div>
+
+</div>
