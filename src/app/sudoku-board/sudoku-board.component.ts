@@ -2,6 +2,7 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { SudokuCellComponent } from './sudoku-cell/sudoku-cell.component';
 import { CellData, UpdateData } from './sudoku-board.model';
+import { getSudoku } from 'sudoku-gen';
 
 @Component({
     selector: 'app-sudoku-board',
@@ -14,31 +15,11 @@ import { CellData, UpdateData } from './sudoku-board.model';
 })
 export class SudokuBoardComponent implements OnInit {
 
-    numberButtons = Array.from({length: 10}, (_, i) => i)
+    numberButtons = Array.from({length: 9}, (_, i) => (i + 1).toString())
 
-    sudokuGrid = signal<number[][]>([
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9],
-    ])
+    sudokuGrid = signal<string[][] | undefined>(undefined)
 
-    private solutionGrid = signal<number[][]>([
-        [5, 3, 4, 6, 7, 8, 9, 1, 2],
-        [6, 7, 2, 1, 9, 5, 3, 4, 8],
-        [1, 9, 8, 2, 3, 4, 5, 6, 6],
-        [8, 3, 3, 3, 6, 3, 3, 3, 3],
-        [4, 6, 5, 8, 3, 3, 2, 1, 1],
-        [7, 6, 3, 4, 2, 9, 8, 5, 6],
-        [1, 6, 2, 3, 4, 5, 2, 8, 7],
-        [1, 2, 3, 4, 1, 9, 4, 3, 5],
-        [1, 2, 3, 4, 8, 5, 6, 7, 9],
-    ])
+    private solutionGrid = signal<string[][] | undefined>(undefined)
 
     gridData = signal<CellData[][] | undefined>(undefined)
 
@@ -52,15 +33,34 @@ export class SudokuBoardComponent implements OnInit {
         return data?.flat().find(cell => cell.id === id)
     })
 
-    selectedNum = signal<number | undefined>(undefined)
+    selectedNum = signal<string | undefined>(undefined)
 
     ngOnInit() {
+        this.getSodoku()
         this.transGridToCellData()
+    }
+
+    getSodoku() {
+        const sudoku = getSudoku('easy')
+        this.sudokuGrid.set(this.convertToGrid(sudoku.puzzle))
+        this.solutionGrid.set(this.convertToGrid(sudoku.solution))
+        console.log(sudoku)
+    }
+
+    convertToGrid(data: string) {
+        const arr = data.split('').map(el => el === '-' ? '' : el)
+
+        let result = []
+        for (let i = 0; i < arr.length; i += 9) {
+            result.push(arr.slice(i, i + 9))
+        }
+
+        return result
     }
 
     transGridToCellData() {
         const grid = this.sudokuGrid()
-        const data = grid.map((row, rowIndex) => {
+        const data = grid?.map((row, rowIndex) => {
             const num = row.length * rowIndex
 
             return row.map((cellVal, colIndex) => {
@@ -80,6 +80,7 @@ export class SudokuBoardComponent implements OnInit {
         })
 
         this.gridData.set(data)
+        console.log(this.gridData())
     }
 
     getBoardCellNgClass(rowIndex: number, lastRow: boolean, colIndex: number, lastCell: boolean): Record<string, boolean> {
@@ -100,7 +101,7 @@ export class SudokuBoardComponent implements OnInit {
         this.selectedCellId.set(id)
     }
 
-    onNumberButtonClick(fillNum: number) {
+    onNumberButtonClick(fillNum?: string) {
         this.selectedNum.set(fillNum)
 
         const selectedCellId = this.selectedCellId()
@@ -108,8 +109,8 @@ export class SudokuBoardComponent implements OnInit {
 
         const data: UpdateData = {
             isUserFilled: true,
-            isError: this.checkCellAnswerError(fillNum),
-            value: fillNum,
+            isError: fillNum ? this.checkCellAnswerError(fillNum) : false,
+            value: fillNum ?? '',
         }
 
         this.updateGridData(selectedCellId, data)
@@ -131,11 +132,11 @@ export class SudokuBoardComponent implements OnInit {
         this.gridData.set(updatedData)
     }
 
-    checkCellAnswerError(value: number): boolean {
+    checkCellAnswerError(value: string): boolean {
         const selectedCell = this.selectedCell()
         if (!selectedCell || selectedCell.isGiven) return false
 
-        const correctValue = this.solutionGrid()[selectedCell.row][selectedCell.col]
+        const correctValue = this.solutionGrid()?.[selectedCell.row][selectedCell.col]
 
         return value !== correctValue
     }

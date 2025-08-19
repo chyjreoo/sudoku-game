@@ -20,7 +20,7 @@ export class SudokuCellComponent {
 
     value = computed(() => this.cellData()?.value)
 
-    isCellBlank = computed(() => this.value() === 0 || this.value() === null || this.value() === undefined)
+    isCellBlank = computed(() => this.value() === '' || this.value() === null || this.value() === undefined)
 
     getCellNgClass() {
         const data = this.cellData()

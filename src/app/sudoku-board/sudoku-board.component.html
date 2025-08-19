@@ -20,13 +20,20 @@
     </div>
 
     <div class="flex gap-2 py-8">
+        <button
+            type="button"
+            class="w-8 h-8  text-white rounded-md bg-blue-400 hover:bg-blue-300 disabled:bg-gray-300"
+            [disabled]="!selectedCellId()"
+            (click)="onNumberButtonClick()"
+        >✕
+        </button>
         @for (num of numberButtons; track $index) {
             <button
                 type="button"
                 class="w-8 h-8  text-white rounded-md bg-blue-400 hover:bg-blue-300 disabled:bg-gray-300"
                 [disabled]="!selectedCellId()"
                 (click)="onNumberButtonClick(num)"
-            >{{ num === 0 ? '✕' : num }}
+            >{{ num }}
             </button>
         }
     </div>

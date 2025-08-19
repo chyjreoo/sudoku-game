@@ -2,7 +2,7 @@ export interface CellData {
     id: number
     row: number
     col: number
-    value: number
+    value: string
     isGiven: boolean
     isUserFilled: boolean
     isError: boolean
