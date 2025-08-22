@@ -41,6 +41,7 @@
                 "build": {
                     "builder": "@angular/build:application",
                     "options": {
+                        "outputPath": "dist/sudoku-game",
                         "browser": "src/main.ts",
                         "polyfills": [
                             "zone.js"
@@ -114,6 +115,13 @@
                         "styles": [
                             "src/styles.scss"
                         ]
+                    }
+                },
+                "deploy": {
+                    "builder": "angular-cli-ghpages:deploy",
+                    "options": {
+                        "baseHref": "/sudoku-game/",
+                        "outputPath": "docs"
                     }
                 }
             }

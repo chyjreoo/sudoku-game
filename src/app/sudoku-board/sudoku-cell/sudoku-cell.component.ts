@@ -22,11 +22,15 @@ export class SudokuCellComponent {
 
     isCellBlank = computed(() => this.value() === '' || this.value() === null || this.value() === undefined)
 
+    isHighlighted = computed(() => this.cellData()?.isHighlighted ?? false)
+
     getCellNgClass() {
         const data = this.cellData()
         return {
             'text-red-500': data?.isError,
             'text-blue-500': data?.isUserFilled && !data?.isError,
+            'bg-slate-50': this.isHighlighted() && !this.isSelected(),
+            'bg-slate-200/70': this.isHighlighted() && this.isSelected(),
         }
     }
 
